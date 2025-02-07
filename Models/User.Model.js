@@ -45,6 +45,12 @@ const userSchema = new mongoose.Schema({
         required: [false, 'Please provide  data of birth'],
         
     },
+    age: {
+        type: String,
+        required: [false, 'Please provide  user age'],
+        
+    },
+   
     Address:{
         type: String,
         required: [false, 'Please provide  address'],
@@ -74,6 +80,25 @@ const userSchema = new mongoose.Schema({
         required: [false, 'user weight is required'],
         
     },
+    targetWeight: {
+        type: String,
+        required: [false, 'Please provide  user target weight'],
+        
+    },
+    bodyshape:{
+        type: String,
+        required: [false, 'Please provide  user body shape'],
+    },
+    weeklyyogaplan:{
+        type: String,
+        required: [false, 'Please provide  user weekly yoga plan'],
+    },
+    practicetime:{
+        type: String,
+        required: [false, 'Please provide  user practice time'],
+    },
+    focusarea:[String],
+    goal:[String],
     health_issues:[String],
     howyouknowus:{
      type:String,
