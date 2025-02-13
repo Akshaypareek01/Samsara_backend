@@ -4,25 +4,41 @@ import mongoose from 'mongoose';
 const eventSchema = new mongoose.Schema({
     eventName: {
         type: String,
-       
+        required: true 
     },
+    type:{ 
+        type: String, 
+        enum: ['free', 'paid'], 
+        required: false 
+      },
+    availableseats:{
+        type: String,
+        required: false
+    },
+    level: { 
+        type: String, 
+        enum: ['Beginner', 'Intermediate', 'Advanced'], 
+        required: false 
+      },
     image: {
         type: String,
-     
+        required: false
     },
     startDate: {
         type: Date,
-        
+        required: false
     },
     startTime: {
         type: String,
-        
+        required: false
     },
     eventType:{
         type: String,
+        required: false
     },
     details: {
         type: String,
+        required: false
        
     },
     password: { type: String,default:""},
