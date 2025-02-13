@@ -16,6 +16,11 @@ const classSchema = new mongoose.Schema({
   schedule: { type: Date, default: Date.now, required: true },
   startTime:{ type: String, required: false },
   endTime:{ type: String, required: false },
+  level: { 
+    type: String, 
+    enum: ['Beginner', 'Intermediate', 'Advanced'], 
+    required: false 
+  },
   recordingPath: String,
   // Add other fields as needed
 });
