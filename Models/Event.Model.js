@@ -32,9 +32,13 @@ const eventSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    eventType:{
+    eventmode:{
         type: String,
         required: false
+    },
+    location: {
+        type: String,
+        required:false
     },
     details: {
         type: String,
