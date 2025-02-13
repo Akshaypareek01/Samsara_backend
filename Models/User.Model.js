@@ -38,7 +38,8 @@ const userSchema = new mongoose.Schema({
     mobile: {
         type: String,
         required: [false, 'Please provide a mobile number'],
-        minlength: 10
+        minlength: 10,
+        unique: true
     },
     dob: {
         type: String,

@@ -14,7 +14,9 @@ import {
     uploadImages,
     loginUserByMobile,
     getUserFind,
-    updateNotificationToken
+    updateNotificationToken,
+    checkUserByMobile,
+    checkUserByEmail
 } from '../Controllers/User.Controller.js';
 import multer from 'multer';
 
@@ -37,6 +39,8 @@ const upload = multer({ storage: storage });
 userRouter.post('/',upload.array('images', 5), createUser);
 
 userRouter.post('/login', loginUser);
+userRouter.post('/check-mobile', checkUserByMobile);
+userRouter.post('/check-email', checkUserByEmail);
 userRouter.post('/loginByMobile', loginUserByMobile);
 userRouter.post('/:userId/update-token', updateNotificationToken);
 // Get all users
