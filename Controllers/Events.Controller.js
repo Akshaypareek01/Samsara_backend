@@ -121,3 +121,54 @@ const updateClassMeetingInfo = async (classId, newMeetingNumber, newMeetingPassw
       res.status(500).json({ success: false, error: error.message });
     }
   };
+
+
+
+  export const registerUserToEvent = async (req, res) => {
+    try {
+        const { eventId, userId } = req.body;
+
+        const event = await Event.findById(eventId);
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        if (!event.students.includes(userId)) {
+            event.students.push(userId);
+            await event.save();
+            return res.status(200).json({ message: 'User registered successfully', event });
+        }
+        
+        res.status(400).json({ message: 'User already registered' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+// Get all students registered for an event
+export const getStudentsForEvent = async (req, res) => {
+    try {
+        const { eventId } = req.params;
+
+        const event = await Event.findById(eventId).populate('students', 'name email');
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found' });
+        }
+
+        res.status(200).json({ students: event.students });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+// Get all events a user is registered in
+export const getUserRegisteredEvents = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        const events = await Event.find({ students: userId });
+        res.status(200).json({ events });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
