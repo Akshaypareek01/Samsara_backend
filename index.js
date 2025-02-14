@@ -140,7 +140,9 @@ async function fileExists(filePath) {
     return false;
   }
 }
-
+app.get('/auth-redirect', (req, res) => {
+  res.redirect('stepsstamp://redirect');
+});
 app.use('/api/users', userRouter);
 app.use('/api/teacher', teacherRouter);
 app.use('/api/zoom', zoomRouter);
