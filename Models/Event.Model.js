@@ -46,7 +46,24 @@ const eventSchema = new mongoose.Schema({
         required: false
        
     },
-    password: { type: String,default:""},
+
+whoitsfor:{
+    type: String,
+    required: false
+},
+whoitsnotfor:{
+    type: String,
+    required: false
+},
+howItWillHelp:{
+    type: String,
+    required: false
+},
+howItWillnotHelp:{
+    type: String,
+    required: false
+},
+   password: { type: String,default:""},
     meeting_number:{ type: String,default:""},
     status: {
         type: Boolean,
