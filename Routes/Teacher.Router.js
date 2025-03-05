@@ -5,7 +5,9 @@ import {
   getTeacherById,
   updateTeacher,
   deleteTeacher,
-  loginTeacher
+  loginTeacher,
+  checkTeacherByMobile,
+  loginTeacherByMobile
 } from '../Controllers/Teacher.Controller.js';
 import multer from 'multer';
 import { uploadClassRecording } from '../Controllers/Classes.Controller.js';
@@ -24,6 +26,8 @@ const upload = multer({ storage: storage });
 // Create a new teacher
 teacherRouter.post('/', createTeacher);
 
+teacherRouter.post('/check-mobile', checkTeacherByMobile);
+teacherRouter.post('/loginByMobile', loginTeacherByMobile);
 // Get all teachers
 teacherRouter.get('/', getAllTeachers);
 

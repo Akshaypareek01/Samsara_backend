@@ -28,6 +28,21 @@ const teacherSchema = new mongoose.Schema({
         required: [true, 'Please provide a mobile number'],
         minlength: 10
     },
+    bodyshape:{
+        type: String,
+        required: [false, 'Please provide  user body shape'],
+    },
+    height: {
+        type: String,
+        required: [false, 'user height is required'],
+        
+    },
+    weight: {
+        type: String,
+        required: [false, 'user weight is required'],
+        
+    },
+
     teachingExperience: {
         type: String,
     },

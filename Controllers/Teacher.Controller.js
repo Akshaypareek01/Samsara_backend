@@ -1,6 +1,59 @@
 import { Teacher } from "../Models/Teachers.Model.js";
 import jwt from 'jsonwebtoken';
 
+
+export const checkTeacherByMobile = async (req, res) => {
+  try {
+      const { mobile } = req.body;
+
+      if (!mobile) {
+          return res.status(400).json({ success: false, message: 'Mobile number is required' });
+      }
+
+      const user = await Teacher.findOne({ mobile });
+
+      if (user) {
+          return res.status(200).json({ success: true, message: 'User exists' });
+      } else {
+          return res.status(200).json({ success: false, message: 'User does not exist' });
+      }
+  } catch (error) {
+      return res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+
+export const loginTeacherByMobile = async (req, res) => {
+  const { mobile, password } = req.body;
+
+  try {
+      // Check if user exists with the provided mobile number
+      const user = await Teacher.findOne({ mobile });
+
+      if (!user || !(await user.correctPassword(password, user.password))) {
+        return res.status(200).json({
+            status: 'Not Found',
+            message: 'Incorrect Mobile or password'
+        });
+    }
+
+    // Generate a token and send it along with user data
+    const token = jwt.sign({ id: user._id }, 'your-secret-key', {
+        expiresIn: '1h' // Adjust the expiration as needed
+    });
+
+    res.status(200).json({
+        status: 'success',
+        token,
+        data: {
+            user
+        }
+    });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Internal server error',error });
+  }
+};
+
 export const loginTeacher = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -40,17 +93,30 @@ export const loginTeacher = async (req, res) => {
 export const createTeacher = async (req, res) => {
   try {
     const teacherData = req.body;
-    const qualificationData = req.body.qualification;
-    const additional_coursesData = req.body.additional_courses;
-      const images = req.files;
-      const qualificationArray = JSON.parse(qualificationData);
-      const additional_coursesArray = JSON.parse(additional_coursesData);
+    const qualificationData = req.body.qualification || null;
+    const additional_coursesData = req.body.additional_courses || null;
+      const images = req.files || null;
+      let qualificationArray ;
+      let additional_coursesArray;
+      if(qualificationData){
+         qualificationArray = JSON.parse(qualificationData);
+         teacherData.qualification = qualificationArray;
+      }
+
+      if(additional_coursesData){
+       additional_coursesArray = JSON.parse(additional_coursesData);
+       teacherData.additional_courses = additional_coursesArray;
+      }
+      
+    if(images){
       teacherData.images = images.map(file => ({
-            filename: file.filename,
-            path: file.path
-        }));
-        teacherData.qualification = qualificationArray;
-        teacherData.additional_courses = additional_coursesArray;
+        filename: file.filename,
+        path: file.path
+    }));
+    }
+     
+    
+    
     const newTeacher = await Teacher.create(teacherData);
     res.status(201).json({
       status: 'success',
