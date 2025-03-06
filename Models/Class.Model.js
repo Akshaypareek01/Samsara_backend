@@ -12,6 +12,23 @@ const classSchema = new mongoose.Schema({
       type: Boolean,
       default: false,
     },
+    
+whoitsfor:{
+  type: String,
+  required: false
+},
+whoitsnotfor:{
+  type: String,
+  required: false
+},
+howItWillHelp:{
+  type: String,
+  required: false
+},
+howItWillnotHelp:{
+  type: String,
+  required: false
+},
   students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Student' }],
   schedule: { type: Date, default: Date.now, required: true },
   startTime:{ type: String, required: false },

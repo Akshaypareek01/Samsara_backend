@@ -6,6 +6,9 @@ const eventSchema = new mongoose.Schema({
         type: String,
         required: true 
     },
+      teacher: { type: mongoose.Schema.Types.ObjectId,
+        ref: 'Teachers',
+        required: false, },
     students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Users' }],
     type:{ 
         type: String, 
