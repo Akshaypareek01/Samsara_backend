@@ -51,6 +51,11 @@ const teacherSchema = new mongoose.Schema({
         required: [true, 'Please provide  data of birth'],
         
     },
+    age: {
+        type: String,
+        required: [false, 'Please provide  user age'],
+        
+    },
     images: [{
         filename: String, // Store the filename of the image
         path: String,     // Store the path to the image in the media folder
