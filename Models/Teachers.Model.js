@@ -48,7 +48,7 @@ const teacherSchema = new mongoose.Schema({
     },
     dob: {
         type: String,
-        required: [true, 'Please provide  data of birth'],
+        required: [false, 'Please provide  data of birth'],
         
     },
     age: {
@@ -62,22 +62,22 @@ const teacherSchema = new mongoose.Schema({
     }],
     Address:{
         type: String,
-        required: [true, 'Please provide  address'],
+        required: [false, 'Please provide  address'],
     },
     expertise:[String],
     city: {
         type: String,
-        required: [true, 'A user must have a city'],
+        required: [false, 'A user must have a city'],
         
     },
     pincode: {
         type: String,
-        required: [true, 'A user must have a pincode'],
+        required: [false, 'A user must have a pincode'],
         
     },
     country: {
         type: String,
-        required: [true, 'A user must have a country'],
+        required: [false, 'A user must have a country'],
         
     },
     qualification:[Object],
