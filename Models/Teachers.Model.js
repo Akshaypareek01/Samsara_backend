@@ -18,6 +18,10 @@ const teacherSchema = new mongoose.Schema({
     gender: {
         type: String,
     },
+    role: {
+        type: String,
+        default:"teacher"
+    },
     password: {
         type: String,
         // required: [true, 'Please provide a password'],

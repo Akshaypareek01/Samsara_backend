@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     gender: {
         type: String
     },
+    role: {
+        type: String,
+        default:"user"
+    },
     company_name:  {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Company', // Reference to the Worker model (if applicable)
