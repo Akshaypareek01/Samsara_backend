@@ -23,8 +23,9 @@ export const getAllClasses = async (req, res) => {
 export const getAllUpcomingClasses = async (req, res) => {
   try {
     const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Reset time to 00:00:00 for the current day
 
-    const classes = await Class.find({ schedule: { $gte: currentDate } }) // Fetch only upcoming or today's classes
+    const classes = await Class.find({ schedule: { $gte: currentDate } }) // Includes today & future dates
       .populate('teacher')
       .exec();
 
