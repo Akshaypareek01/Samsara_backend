@@ -11,11 +11,12 @@ const eventsRouter = express.Router();
 eventsRouter.post('/', createEvent);
 
 // Get event by ID
+eventsRouter.get('/upcoming', getAllEventsUpcoming);
 eventsRouter.get('/:id', getEventById);
 
 // Get all events
 eventsRouter.get('/', getAllEvents);
-eventsRouter.get('/upcoming', getAllEventsUpcoming);
+
 
 // Update event
 eventsRouter.put('/:id', updateEvent);
