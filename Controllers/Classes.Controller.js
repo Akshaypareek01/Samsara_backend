@@ -63,13 +63,58 @@ export const getClassesByTeacher = async (req, res) => {
 
 export const addStudentToClass = async (req, res) => {
   const { classId, studentId } = req.params;
+
   try {
-    const updatedClass = await Class.findByIdAndUpdate(
-      classId,
-      { $push: { students: studentId } },
-      { new: true }
-    );
-    res.json({ success: true, data: updatedClass });
+    // Find the class by ID
+    const foundClass = await Class.findById(classId);
+
+    if (!foundClass) {
+      return res.status(404).json({ success: false, message: "Class not found" });
+    }
+
+    // Check if student is already in the class
+    if (foundClass.students.includes(studentId)) {
+      return res.json({ success: false, message: "Student already enrolled" });
+    }
+
+    // Add student to class
+    foundClass.students.push(studentId);
+    await foundClass.save();
+
+    res.json({ success: true, data: foundClass });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const getStudentClasses = async (req, res) => {
+  const { studentId } = req.params;
+
+  try {
+    // Find all classes where studentId exists in the students array
+    const classes = await Class.find({ students: studentId });
+
+    res.json({ success: true, data: classes });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const isStudentEnrolled = async (req, res) => {
+  const { classId, studentId } = req.params;
+
+  try {
+    // Find the class by ID
+    const foundClass = await Class.findById(classId);
+
+    if (!foundClass) {
+      return res.status(404).json({ success: false, message: "Class not found" });
+    }
+
+    // Check if student is in the class
+    const isEnrolled = foundClass.students.includes(studentId);
+
+    res.json({ success: true, enrolled: isEnrolled });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
