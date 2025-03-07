@@ -1,5 +1,5 @@
 import express from 'express';
-import { EndMeeting, addStudentToClass, assignTeacherToClass, createClass, deleteClass, getAllClasses, getAllUpcomingClasses, getClassById, getClassesByTeacher, getStudentClasses, isStudentEnrolled, removeStudentFromClass, updateClass } from '../Controllers/Classes.Controller.js';
+import { EndMeeting, addStudentToClass, assignTeacherToClass, createClass, deleteClass, getAllClasses, getAllUpcomingClasses, getClassById, getClassesByTeacher, getStudentClasses, getStudentUpcomingClasses, isStudentEnrolled, removeStudentFromClass, updateClass } from '../Controllers/Classes.Controller.js';
 
 
 const classRouter = express.Router();
@@ -27,6 +27,7 @@ classRouter.put('/:classId/assign-teacher/:teacherId', assignTeacherToClass);
 classRouter.put('/:classId/add-student/:studentId', addStudentToClass);
 
 classRouter.get("/student/:studentId/classes", getStudentClasses);
+classRouter.get("/student/:studentId/classes/upcoming", getStudentUpcomingClasses);
 classRouter.get("/class/:classId/student/:studentId/enrolled", isStudentEnrolled);
 
 // Route for removing a student from a class

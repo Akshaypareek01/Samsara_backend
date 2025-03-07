@@ -2,7 +2,7 @@
 
 // routes/eventRoutes.js
 import express from 'express';
-import { EndEventMeeting, createEvent, deleteEvent, getAllEvents, getEventById, getStudentsForEvent, getUserRegisteredEvents, registerUserToEvent, updateEvent } from '../Controllers/Events.Controller.js';
+import { EndEventMeeting, createEvent, deleteEvent, getAllEvents, getAllEventsUpcoming, getEventById, getStudentsForEvent, getUserRegisteredEvents, getUserRegisteredEventsUpcoming, registerUserToEvent, updateEvent } from '../Controllers/Events.Controller.js';
 
 
 const eventsRouter = express.Router();
@@ -15,6 +15,7 @@ eventsRouter.get('/:id', getEventById);
 
 // Get all events
 eventsRouter.get('/', getAllEvents);
+eventsRouter.get('/upcoming', getAllEventsUpcoming);
 
 // Update event
 eventsRouter.put('/:id', updateEvent);
@@ -31,5 +32,7 @@ eventsRouter.get('/students/:eventId', getStudentsForEvent);
 
 // Route to get all events a user is registered in
 eventsRouter.get('/user-events/:userId', getUserRegisteredEvents);
+
+eventsRouter.get('/user-events/:userId/upcoming', getUserRegisteredEventsUpcoming);
 
 export default eventsRouter;

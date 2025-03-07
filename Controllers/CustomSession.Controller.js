@@ -125,6 +125,31 @@ const approveSession = async (req, res) => {
     }
 };
 
+export const getAllSessionsByUserIdUpcoming = async (req, res) => {
+  try {
+      const { userId } = req.params;
+
+      if (!userId) {
+          return res.status(400).json({ message: "User ID is required" });
+      }
+
+      const currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0); // Reset time to midnight to include today's sessions
+
+      const sessions = await CustomSession.find({ 
+          user: userId,
+          date: { $gte: currentDate.toISOString().split('T')[0] } // Filter only today's and future sessions
+      })
+      .populate('teacher', 'name email')  
+      .populate('timeSlot', 'timeRange') 
+      .exec();
+
+      res.status(200).json(sessions);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+};
+
 // Get session details by user ID and session ID
 export const getSessionDetails = async (req, res) => {
     try {

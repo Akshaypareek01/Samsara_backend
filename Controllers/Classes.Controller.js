@@ -115,6 +115,25 @@ export const getStudentClasses = async (req, res) => {
   }
 };
 
+export const getStudentUpcomingClasses = async (req, res) => {
+  const { studentId } = req.params;
+
+  try {
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Reset time to midnight (00:00:00) to include today's classes
+
+    // Find all upcoming classes where the student is enrolled
+    const classes = await Class.find({ 
+      students: studentId, 
+      schedule: { $gte: currentDate } // Only fetch today’s and future classes
+    })
+
+    res.json({ success: true, data: classes });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 export const isStudentEnrolled = async (req, res) => {
   const { classId, studentId } = req.params;
 

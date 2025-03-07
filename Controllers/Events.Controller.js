@@ -40,6 +40,22 @@ export const getAllEvents = async (req, res) => {
     }
 };
 
+export const getAllEventsUpcoming = async (req, res) => {
+    try {
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0); // Reset time to 00:00:00 to include today's events
+
+        // Fetch only today's and future events
+        const events = await Event.find({ 
+            startDate: { $gte: currentDate } 
+        })
+
+        res.status(200).json(events);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 // Update event
 export const updateEvent = async (req, res) => {
     try {
@@ -167,6 +183,25 @@ export const getUserRegisteredEvents = async (req, res) => {
         const { userId } = req.params;
 
         const events = await Event.find({ students: userId });
+        res.status(200).json({ events });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+export const getUserRegisteredEventsUpcoming = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0); // Reset time to 00:00:00 to include today's events
+
+        // Fetch only upcoming events or events happening today
+        const events = await Event.find({ 
+            students: userId, 
+            startDate: { $gte: currentDate } // Ensures only today’s and future events are included
+        })
+
         res.status(200).json({ events });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
