@@ -105,6 +105,49 @@ const approveSession = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };
+
+  export const getAllSessionsByUserId = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required" });
+        }
+
+        const sessions = await CustomSession.find({ user: userId })
+            .populate('teacher', 'name email')  // Populating teacher details
+            .populate('timeSlot', 'timeRange') // Populating time slot details
+            .exec();
+
+        res.status(200).json(sessions);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Get session details by user ID and session ID
+export const getSessionDetails = async (req, res) => {
+    try {
+        const { userId, sessionId } = req.params;
+
+        if (!userId || !sessionId) {
+            return res.status(400).json({ message: "User ID and Session ID are required" });
+        }
+
+        const session = await CustomSession.findOne({ _id: sessionId, user: userId })
+            .populate('teacher')
+            .populate('timeSlot', 'timeRange')
+            .exec();
+
+        if (!session) {
+            return res.status(404).json({ message: "Session not found" });
+        }
+
+        res.status(200).json(session);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
   
   const getAllTimeSlots = async (req, res) => {
     try {

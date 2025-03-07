@@ -20,6 +20,20 @@ export const getAllClasses = async (req, res) => {
   }
 };
 
+export const getAllUpcomingClasses = async (req, res) => {
+  try {
+    const currentDate = new Date();
+
+    const classes = await Class.find({ schedule: { $gte: currentDate } }) // Fetch only upcoming or today's classes
+      .populate('teacher')
+      .exec();
+
+    res.json({ success: true, data: classes });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 export const getClassById = async (req, res) => {
   const { classId } = req.params;
   try {

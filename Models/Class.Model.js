@@ -29,7 +29,7 @@ howItWillnotHelp:{
   type: String,
   required: false
 },
-  students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Student' }],
+  students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Users' }],
   schedule: { type: Date, default: Date.now, required: true },
   startTime:{ type: String, required: false },
   endTime:{ type: String, required: false },
