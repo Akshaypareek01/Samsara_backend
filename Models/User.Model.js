@@ -118,7 +118,15 @@ const userSchema = new mongoose.Schema({
         
         
     },
-    attendance: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Class' }],
+    attendance: [
+        {
+            classId: { type: mongoose.Schema.Types.ObjectId, ref: 'Class' },
+            joinedAt: Date,
+            leftAt: Date,
+            durationMinutes: Number,
+            kcalBurned: Number
+        }
+    ],
     achievements: [String],
     assessments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Assessment' }],
     classFeedback: [

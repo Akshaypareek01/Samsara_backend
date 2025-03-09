@@ -16,7 +16,10 @@ import {
     getUserFind,
     updateNotificationToken,
     checkUserByMobile,
-    checkUserByEmail
+    checkUserByEmail,
+    joinClass,
+    leaveClass,
+    getUserStats
 } from '../Controllers/User.Controller.js';
 import multer from 'multer';
 
@@ -43,6 +46,9 @@ userRouter.post('/check-mobile', checkUserByMobile);
 userRouter.post('/check-email', checkUserByEmail);
 userRouter.post('/loginByMobile', loginUserByMobile);
 userRouter.post('/:userId/update-token', updateNotificationToken);
+userRouter.post('/join', joinClass);
+userRouter.post('/leave', leaveClass);
+userRouter.post('/stats', getUserStats);
 // Get all users
 userRouter.get('/', getUsers);
 userRouter.get('/find/:mobile', getUserFind);

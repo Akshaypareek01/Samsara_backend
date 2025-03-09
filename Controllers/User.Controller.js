@@ -4,7 +4,7 @@ import { Mood } from "../Models/UserMood.Model.js";
 import Membership from "../Models/Membership.Model.js";
 import EventApplication from "../Models/EventApplication.Model.js";
 import { CustomSession } from "../Models/CustomSession.Model.js";
-
+import { Class } from "../Models/Class.Model.js";
 
 export const checkUserByMobile = async (req, res) => {
   try {
@@ -442,5 +442,77 @@ export const updateNotificationToken = async (req, res) => {
         status: false,
         message: 'Failed to update notification token',
       });
+  }
+};
+
+
+
+export const joinClass = async (req, res) => {
+  const { userId, classId } = req.body;
+
+  try {
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ message: 'User not found' });
+
+      const yogaClass = await Class.findById(classId);
+      if (!yogaClass) return res.status(404).json({ message: 'Class not found' });
+
+      // Add class to attendance
+      const joinedAt = new Date();
+      user.attendance.push({ classId, joinedAt });
+
+      await user.save();
+      res.status(200).json({ message: 'User joined the class', joinedAt });
+  } catch (error) {
+      res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+export const leaveClass = async (req, res) => {
+  const { userId, classId } = req.body;
+
+  try {
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ message: 'User not found' });
+
+      const attendedClass = user.attendance.find(att => att.classId.toString() === classId);
+      if (!attendedClass) return res.status(404).json({ message: 'User did not join this class' });
+
+      const leftAt = new Date();
+      const durationMinutes = Math.round((leftAt - attendedClass.joinedAt) / 60000); // Convert ms to minutes
+
+      // Estimate kcal burned (Assuming avg 5 kcal per min)
+      const kcalBurned = durationMinutes * 5;
+
+      attendedClass.leftAt = leftAt;
+      attendedClass.durationMinutes = durationMinutes;
+      attendedClass.kcalBurned = kcalBurned;
+
+      await user.save();
+      res.status(200).json({ message: 'User left the class', durationMinutes, kcalBurned });
+  } catch (error) {
+      res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+export const getUserStats = async (req, res) => {
+  const { userId, days } = req.body;
+
+  try {
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ message: 'User not found' });
+
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+
+      const filteredAttendance = user.attendance.filter(att => new Date(att.joinedAt) >= startDate);
+
+      const totalClasses = filteredAttendance.length;
+      const totalMinutes = filteredAttendance.reduce((sum, att) => sum + (att.durationMinutes || 0), 0);
+      const totalKcalBurned = filteredAttendance.reduce((sum, att) => sum + (att.kcalBurned || 0), 0);
+
+      res.status(200).json({ totalClasses, totalMinutes, totalKcalBurned });
+  } catch (error) {
+      res.status(500).json({ message: 'Server error', error });
   }
 };
