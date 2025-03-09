@@ -1,51 +1,74 @@
 import { Mood } from "../Models/UserMood.Model.js";
 
 
-// Get mood by user ID
-export const getMoodByUserId = async (req, res) => {
-  try {
-    const moods = await Mood.find({ userId: req.params.userId });
-    res.status(200).json(moods);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+// 1️⃣ Add Mood Entry
+export const addMood = async (req, res) => {
+    const { userId, mood, note } = req.body;
+
+    try {
+        const newMood = new Mood({ userId, mood, note });
+        await newMood.save();
+
+        res.status(201).json({ message: 'Mood added successfully', mood: newMood });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
 };
 
-// Create a new mood
-export const createMood = async (req, res) => {
-  const { userId, mood } = req.body;
+// 2️⃣ Get Mood History (Date-wise)
+export const getMoodHistory = async (req, res) => {
+    const { userId, startDate, endDate } = req.body;
 
-  try {
-    const newMood = new Mood({ userId, mood });
-    await newMood.save();
-    res.status(201).json(newMood);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+    try {
+        const query = { userId };
+        if (startDate && endDate) {
+            query.createdAt = { 
+                $gte: new Date(startDate), 
+                $lte: new Date(endDate)
+            };
+        }
+
+        const moodHistory = await Mood.find(query).sort({ createdAt: -1 });
+
+        res.status(200).json({ total: moodHistory.length, history: moodHistory });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
 };
 
-// Update mood by user ID
-export const updateMoodByUserId = async (req, res) => {
-  const { userId, mood } = req.body;
+// 3️⃣ Get Latest Mood Entry
+export const getLatestMood = async (req, res) => {
+    const { userId } = req.body;
 
-  try {
-    const updatedMood = await Mood.findOneAndUpdate(
-      { userId },
-      { mood, createdAt: Date.now() },
-      { new: true }
-    );
-    res.status(200).json(updatedMood);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+    try {
+        const latestMood = await Mood.findOne({ userId }).sort({ createdAt: -1 });
+
+        if (!latestMood) {
+            return res.status(404).json({ message: 'No mood history found' });
+        }
+
+        res.status(200).json(latestMood);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
 };
 
-// Delete mood by user ID
-export const deleteMoodByUserId = async (req, res) => {
-  try {
-    await Mood.deleteOne({ userId: req.params.userId });
-    res.status(200).json({ message: 'Mood deleted successfully' });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+// 4️⃣ Delete a Mood Entry
+export const deleteMoodEntry = async (req, res) => {
+    const { moodId } = req.params;
+
+    try {
+        const deletedMood = await Mood.findByIdAndDelete(moodId);
+        if (!deletedMood) {
+            return res.status(404).json({ message: 'Mood entry not found' });
+        }
+
+        res.status(200).json({ message: 'Mood entry deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
 };
+
+
+
+

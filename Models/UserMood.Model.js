@@ -10,6 +10,10 @@ const moodSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  note: {
+    type: String,
+    default: '' // Optional note for the mood
+  },
   createdAt: {
     type: Date,
     default: Date.now
