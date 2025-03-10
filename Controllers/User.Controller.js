@@ -529,7 +529,7 @@ export const getWeeklyStats = async (req, res) => {
       startDate.setDate(today.getDate() - 6); // Get last 7 days
 
       const weeklyData = {};
-      const daysMap = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+      const daysMap = ['S', 'M', 'T', 'W', 'Th', 'F', 'Sa']; // Updated correct mapping
 
       for (let i = 0; i < 7; i++) {
           const date = new Date(startDate);
