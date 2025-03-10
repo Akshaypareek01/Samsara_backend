@@ -543,8 +543,8 @@ export const getWeeklyStats = async (req, res) => {
           if (attDate >= startDate && attDate <= today) {
               const label = daysMap[attDate.getDay()];
               if (weeklyData[label]) {
-                  weeklyData[label].totalMinutes += att.durationMinutes || 0;
-                  weeklyData[label].totalKcalBurned += att.kcalBurned || 0;
+                  weeklyData[label].totalMinutes += att.durationMinutes || 1;
+                  weeklyData[label].totalKcalBurned += att.kcalBurned || 1;
               }
           }
       });
