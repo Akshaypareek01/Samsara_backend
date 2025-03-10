@@ -516,3 +516,42 @@ export const getUserStats = async (req, res) => {
       res.status(500).json({ message: 'Server error', error });
   }
 };
+
+export const getWeeklyStats = async (req, res) => {
+  const { userId } = req.body;
+  
+  try {
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).json({ message: 'User not found' });
+
+      const today = new Date();
+      const startDate = new Date();
+      startDate.setDate(today.getDate() - 6); // Get last 7 days
+
+      const weeklyData = {};
+      const daysMap = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+      for (let i = 0; i < 7; i++) {
+          const date = new Date(startDate);
+          date.setDate(startDate.getDate() + i);
+          const label = daysMap[date.getDay()];
+          weeklyData[label] = { label, totalMinutes: 0, totalKcalBurned: 0 };
+      }
+
+      user.attendance.forEach(att => {
+          const attDate = new Date(att.joinedAt);
+          if (attDate >= startDate && attDate <= today) {
+              const label = daysMap[attDate.getDay()];
+              if (weeklyData[label]) {
+                  weeklyData[label].totalMinutes += att.durationMinutes || 0;
+                  weeklyData[label].totalKcalBurned += att.kcalBurned || 0;
+              }
+          }
+      });
+
+      const result = Object.values(weeklyData);
+      res.status(200).json(result);
+  } catch (error) {
+      res.status(500).json({ message: 'Server error', error });
+  }
+};

@@ -19,7 +19,8 @@ import {
     checkUserByEmail,
     joinClass,
     leaveClass,
-    getUserStats
+    getUserStats,
+    getWeeklyStats
 } from '../Controllers/User.Controller.js';
 import multer from 'multer';
 
@@ -49,6 +50,7 @@ userRouter.post('/:userId/update-token', updateNotificationToken);
 userRouter.post('/join', joinClass);
 userRouter.post('/leave', leaveClass);
 userRouter.post('/stats', getUserStats);
+userRouter.post('/weekly-stats', getWeeklyStats);
 // Get all users
 userRouter.get('/', getUsers);
 userRouter.get('/find/:mobile', getUserFind);
