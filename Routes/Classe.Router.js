@@ -1,5 +1,5 @@
 import express from 'express';
-import { EndMeeting, addStudentToClass, assignTeacherToClass, createClass, deleteClass, getAllClasses, getAllUpcomingClasses, getClassById, getClassesByTeacher, getStudentClasses, getStudentUpcomingClasses, isStudentEnrolled, removeStudentFromClass, updateClass } from '../Controllers/Classes.Controller.js';
+import { EndMeeting, addPredefinedClasses, addStudentToClass, assignTeacherToClass, createClass, deleteClass, getAllClasses, getAllUpcomingClasses, getClassById, getClassesByTeacher, getStudentClasses, getStudentUpcomingClasses, isStudentEnrolled, removeStudentFromClass, updateClass } from '../Controllers/Classes.Controller.js';
 
 
 const classRouter = express.Router();
@@ -19,7 +19,7 @@ classRouter.put('/:classId', updateClass);
 
 // Route for deleting a class
 classRouter.delete('/:classId', deleteClass);
-
+classRouter.post('/add-pre-data', addPredefinedClasses);
 // Route for assigning a teacher to a class
 classRouter.put('/:classId/assign-teacher/:teacherId', assignTeacherToClass);
 

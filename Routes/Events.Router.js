@@ -2,7 +2,7 @@
 
 // routes/eventRoutes.js
 import express from 'express';
-import { EndEventMeeting, createEvent, deleteEvent, getAllEvents, getAllEventsUpcoming, getEventById, getStudentsForEvent, getUserRegisteredEvents, getUserRegisteredEventsUpcoming, registerUserToEvent, updateEvent } from '../Controllers/Events.Controller.js';
+import { EndEventMeeting, addPredefinedEvents, createEvent, deleteEvent, getAllEvents, getAllEventsUpcoming, getEventById, getStudentsForEvent, getUserRegisteredEvents, getUserRegisteredEventsUpcoming, registerUserToEvent, updateEvent } from '../Controllers/Events.Controller.js';
 
 
 const eventsRouter = express.Router();
@@ -17,7 +17,7 @@ eventsRouter.get('/:id', getEventById);
 // Get all events
 eventsRouter.get('/', getAllEvents);
 
-
+eventsRouter.post('/add-pre-data', addPredefinedEvents);
 // Update event
 eventsRouter.put('/:id', updateEvent);
 

@@ -207,3 +207,136 @@ export const getUserRegisteredEventsUpcoming = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+
+const preDefineEvents = [
+    {
+      "eventName": "Sunrise Yoga & Meditation",
+      "details": "Start your day with an energizing sunrise yoga session followed by peaceful meditation. Perfect for all levels.",
+      "availableseats": "50",
+      "eventmode": "online",
+      "image": "https://yogajala.com/wp-content/uploads/3-49.jpg",
+      "level": "Beginner",
+      "location": "Virtual",
+      "startDate": "2025-04-10",
+      "startTime": "06:30",
+      "type": "free"
+    },
+    {
+      "eventName": "Deep Stretch & Flexibility Yoga",
+      "details": "Improve flexibility and release tension with deep stretching yoga techniques. A must-attend for those with stiff muscles.",
+      "availableseats": "40",
+      "eventmode": "offline",
+      "image": "https://wallpaperaccess.com/full/1347345.jpg",
+      "level": "Intermediate",
+      "location": "Mumbai",
+      "startDate": "2025-04-25",
+      "startTime": "18:00",
+      "type": "paid"
+    },
+    {
+      "eventName": "Power Yoga for Strength",
+      "details": "Boost your stamina and build core strength with our intense power yoga session designed for fitness enthusiasts.",
+      "availableseats": "60",
+      "eventmode": "online",
+      "image": "https://asmy.org.au/app/uploads/2019/01/DSC09296_edited.jpg",
+      "level": "Advanced",
+      "location": "Virtual",
+      "startDate": "2025-05-05",
+      "startTime": "19:00",
+      "type": "free"
+    },
+    {
+      "eventName": "Yoga for Stress Relief",
+      "details": "Unwind and de-stress with gentle yoga poses and breathing exercises designed to calm the mind and body.",
+      "availableseats": "30",
+      "eventmode": "offline",
+      "image": "https://1.bp.blogspot.com/_sCVN1yQuK3A/TNfcYl4FG8I/AAAAAAAADI8/jpc-oc9UaMs/s1600/dhanurasana-posizione-dellarco.jpg",
+      "level": "Beginner",
+      "location": "Jaipur",
+      "startDate": "2025-05-20",
+      "startTime": "17:30",
+      "type": "free"
+    },
+    {
+      "eventName": "Full Moon Yoga Flow",
+      "details": "Experience the magic of yoga under the full moon, balancing your mind and body with gentle movements.",
+      "availableseats": "45",
+      "eventmode": "offline",
+      "image": "https://wallpaperaccess.com/full/1347345.jpg",
+      "level": "Intermediate",
+      "location": "Goa",
+      "startDate": "2025-06-01",
+      "startTime": "20:00",
+      "type": "paid"
+    },
+    {
+      "eventName": "Prenatal Yoga for Moms-to-Be",
+      "details": "A soothing yoga class designed for expectant mothers to enhance flexibility and relaxation.",
+      "availableseats": "20",
+      "eventmode": "online",
+      "image": "https://yogajala.com/wp-content/uploads/3-49.jpg",
+      "level": "Beginner",
+      "location": "Virtual",
+      "startDate": "2025-06-15",
+      "startTime": "10:00",
+      "type": "free"
+    },
+    {
+      "eventName": "Sun Salutation Masterclass",
+      "details": "Master the 12 steps of Surya Namaskar with expert guidance, improving strength and flexibility.",
+      "availableseats": "35",
+      "eventmode": "offline",
+      "image": "https://asmy.org.au/app/uploads/2019/01/DSC09296_edited.jpg",
+      "level": "Intermediate",
+      "location": "Bangalore",
+      "startDate": "2025-07-05",
+      "startTime": "07:00",
+      "type": "paid"
+    },
+    {
+      "eventName": "Yoga & Sound Healing",
+      "details": "Combine yoga with the healing power of sound vibrations to achieve a deep sense of relaxation and balance.",
+      "availableseats": "50",
+      "eventmode": "offline",
+      "image": "https://1.bp.blogspot.com/_sCVN1yQuK3A/TNfcYl4FG8I/AAAAAAAADI8/jpc-oc9UaMs/s1600/dhanurasana-posizione-dellarco.jpg",
+      "level": "Intermediate",
+      "location": "Delhi",
+      "startDate": "2025-07-20",
+      "startTime": "19:30",
+      "type": "paid"
+    },
+    {
+      "eventName": "Morning Yoga for Beginners",
+      "details": "Start your yoga journey with simple yet effective postures to improve posture and overall well-being.",
+      "availableseats": "25",
+      "eventmode": "online",
+      "image": "https://yogajala.com/wp-content/uploads/3-49.jpg",
+      "level": "Beginner",
+      "location": "Virtual",
+      "startDate": "2025-08-10",
+      "startTime": "06:00",
+      "type": "free"
+    },
+    {
+      "eventName": "Yoga & Detox Retreat",
+      "details": "Immerse yourself in a weekend of detoxifying yoga, mindful eating, and relaxation by the beach.",
+      "availableseats": "15",
+      "eventmode": "offline",
+      "image": "https://wallpaperaccess.com/full/1347345.jpg",
+      "level": "Advanced",
+      "location": "Goa",
+      "startDate": "2025-08-25",
+      "startTime": "08:00",
+      "type": "paid"
+    }
+  ]
+  
+
+export const addPredefinedEvents = async (req, res) => {
+    try {
+      const insertedClasses = await Event.insertMany(preDefineEvents);
+      res.status(201).json({ message: "Predefined Events added successfully", data: insertedClasses });
+    } catch (error) {
+      res.status(500).json({ message: "Error adding predefined Events", error: error.message });
+    }
+  };
