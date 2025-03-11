@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 const companySchema = new mongoose.Schema({
+  companyId: { type: String, unique: true, required: true },
   companyName: { type: String },
   consultPersonName: { type: String, required: true },
   email: { type: String },

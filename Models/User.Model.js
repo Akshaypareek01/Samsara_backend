@@ -20,10 +20,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         default:"user"
     },
-    company_name:  {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Company', // Reference to the Worker model (if applicable)
-      },
+    companyId: {
+        type: String,
+        ref: 'Company', // Reference to the Company model using companyId
+        required: true // Make it required if every user must belong to a company
+    },
   
     corporate_id:{
         type:String

@@ -1,10 +1,23 @@
 import Company from "../Models/Comapny.Model.js";
 
 
+const generateUniqueId = () => {
+  return Math.random().toString(36).substr(2, 8).toUpperCase();
+};
+
 // Create a new company
 export const createCompany = async (req, res) => {
   try {
-    const company = await Company.create(req.body);
+    let companyId;
+    let isUnique = false;
+
+    while (!isUnique) {
+      companyId = generateUniqueId();
+      const existingCompany = await Company.findOne({ companyId });
+      if (!existingCompany) isUnique = true;
+    }
+
+    const company = await Company.create({ ...req.body, companyId });
     res.status(201).json(company);
   } catch (error) {
     res.status(500).json({ error: 'Internal Server Error' });

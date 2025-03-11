@@ -5,6 +5,7 @@ import Membership from "../Models/Membership.Model.js";
 import EventApplication from "../Models/EventApplication.Model.js";
 import { CustomSession } from "../Models/CustomSession.Model.js";
 import { Class } from "../Models/Class.Model.js";
+import Company from "../Models/Comapny.Model.js";
 
 export const checkUserByMobile = async (req, res) => {
   try {
@@ -121,6 +122,19 @@ export const createUser = async (req, res) => {
       console.log("Data ==>",req.body)
       // console.log("images",req.file)
       const userData = req.body;
+      const {companyId} = userData
+
+        // Check if companyId is provided
+        if (companyId) {
+            const existingCompany = await Company.findOne({ companyId });
+
+            if (!existingCompany) {
+                return res.status(400).json({
+                    status: 'fail',
+                    message: 'Invalid companyId: No company found with this ID'
+                });
+            }
+        }
               
       const images = req.files || [];
       //  console.log("Images",images)
