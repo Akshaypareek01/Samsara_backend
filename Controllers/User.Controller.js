@@ -451,20 +451,27 @@ export const joinClass = async (req, res) => {
   const { userId, classId } = req.body;
 
   try {
-      const user = await User.findById(userId);
-      if (!user) return res.status(404).json({ message: 'User not found' });
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-      const yogaClass = await Class.findById(classId);
-      if (!yogaClass) return res.status(404).json({ message: 'Class not found' });
+    const yogaClass = await Class.findById(classId);
+    if (!yogaClass) return res.status(404).json({ message: 'Class not found' });
 
-      // Add class to attendance
-      const joinedAt = new Date();
-      user.attendance.push({ classId, joinedAt });
+    // Check if user already joined the class
+    const existingAttendance = user.attendance.find(att => att.classId.toString() === classId);
 
-      await user.save();
-      res.status(200).json({ message: 'User joined the class', joinedAt });
+    if (existingAttendance) {
+      return res.status(200).json({ message: 'Attendance already taken for this class', joinedAt: existingAttendance.joinedAt });
+    }
+
+    // Add new attendance entry
+    const joinedAt = new Date();
+    user.attendance.push({ classId, joinedAt });
+
+    await user.save();
+    res.status(200).json({ message: 'User joined the class', joinedAt });
   } catch (error) {
-      res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: 'Server error', error });
   }
 };
 
@@ -472,28 +479,29 @@ export const leaveClass = async (req, res) => {
   const { userId, classId } = req.body;
 
   try {
-      const user = await User.findById(userId);
-      if (!user) return res.status(404).json({ message: 'User not found' });
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
-      const attendedClass = user.attendance.find(att => att.classId.toString() === classId);
-      if (!attendedClass) return res.status(404).json({ message: 'User did not join this class' });
+    const attendedClass = user.attendance.find(att => att.classId.toString() === classId);
+    if (!attendedClass) return res.status(404).json({ message: 'User did not join this class' });
 
-      const leftAt = new Date();
-      const durationMinutes = Math.round((leftAt - attendedClass.joinedAt) / 60000); // Convert ms to minutes
+    const leftAt = new Date();
+    
+    // If user rejoins and leaves multiple times, update leave time instead of adding new entries
+    const durationMinutes = Math.round((leftAt - attendedClass.joinedAt) / 60000); // Convert ms to minutes
+    const kcalBurned = durationMinutes * 5; // Assuming avg 5 kcal per min
 
-      // Estimate kcal burned (Assuming avg 5 kcal per min)
-      const kcalBurned = durationMinutes * 5;
+    attendedClass.leftAt = leftAt;
+    attendedClass.durationMinutes = durationMinutes;
+    attendedClass.kcalBurned = kcalBurned;
 
-      attendedClass.leftAt = leftAt;
-      attendedClass.durationMinutes = durationMinutes;
-      attendedClass.kcalBurned = kcalBurned;
-
-      await user.save();
-      res.status(200).json({ message: 'User left the class', durationMinutes, kcalBurned });
+    await user.save();
+    res.status(200).json({ message: 'User left the class', durationMinutes, kcalBurned });
   } catch (error) {
-      res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: 'Server error', error });
   }
 };
+
 
 export const getUserStats = async (req, res) => {
   const { userId, days } = req.body;
