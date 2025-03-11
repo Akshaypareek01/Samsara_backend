@@ -123,7 +123,7 @@ export const createUser = async (req, res) => {
       // console.log("images",req.file)
       const userData = req.body;
       const {companyId} = userData
-
+      let companyObjectId = null;
         // Check if companyId is provided
         if (companyId) {
             const existingCompany = await Company.findOne({ companyId });
@@ -134,6 +134,7 @@ export const createUser = async (req, res) => {
                     message: 'Invalid companyId: No company found with this ID'
                 });
             }
+            companyObjectId = existingCompany._id;
         }
               
       const images = req.files || [];
@@ -145,7 +146,10 @@ export const createUser = async (req, res) => {
         }));
       
 
-        const newUser = await User.create(userData);
+        const newUser = await User.create({ 
+          ...userData, 
+          company_name: companyObjectId  // Store ObjectId here
+      });
         const defaultMood = {
           userId: newUser._id,
           mood: 'Happy' // You can set a default mood value
