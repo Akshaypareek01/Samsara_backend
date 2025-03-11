@@ -527,7 +527,7 @@ export const getUserStats = async (req, res) => {
 
 export const getWeeklyStats = async (req, res) => {
   const { userId } = req.body;
-  
+
   try {
       const user = await User.findById(userId);
       if (!user) return res.status(404).json({ message: 'User not found' });
@@ -543,7 +543,9 @@ export const getWeeklyStats = async (req, res) => {
           const date = new Date(startDate);
           date.setDate(startDate.getDate() + i);
           const label = daysMap[date.getDay()];
-          weeklyData[label] = { label, totalMinutes: 0, totalKcalBurned: 0 };
+          
+          // Default values set to 5 instead of 0
+          weeklyData[label] = { label, totalMinutes: 5, totalKcalBurned: 5 };
       }
 
       user.attendance.forEach(att => {
@@ -551,8 +553,8 @@ export const getWeeklyStats = async (req, res) => {
           if (attDate >= startDate && attDate <= today) {
               const label = daysMap[attDate.getDay()];
               if (weeklyData[label]) {
-                  weeklyData[label].totalMinutes += att.durationMinutes || 1;
-                  weeklyData[label].totalKcalBurned += att.kcalBurned || 1;
+                  weeklyData[label].totalMinutes = (att.durationMinutes || 0) + (weeklyData[label].totalMinutes !== 5 ? weeklyData[label].totalMinutes : 0);
+                  weeklyData[label].totalKcalBurned = (att.kcalBurned || 0) + (weeklyData[label].totalKcalBurned !== 5 ? weeklyData[label].totalKcalBurned : 0);
               }
           }
       });
