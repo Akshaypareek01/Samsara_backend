@@ -20,7 +20,11 @@ import {
     joinClass,
     leaveClass,
     getUserStats,
-    getWeeklyStats
+    getWeeklyStats,
+    getUserProfile,
+    updatePassword,
+    forgotPassword,
+    resetPassword
 } from '../Controllers/User.Controller.js';
 import multer from 'multer';
 
@@ -75,5 +79,13 @@ userRouter.post('/:userId/submit-assessment-form', submitAssessmentForm);
 
 
 userRouter.post('/upload_images', upload.single('image'),uploadImages)
+
+// User profile route
+userRouter.get('/profile/:userId', getUserProfile);
+
+// Password management routes
+userRouter.patch('/update-password/:userId', updatePassword);
+userRouter.post('/forgot-password', forgotPassword);
+userRouter.patch('/reset-password/:token', resetPassword);
 
 export default userRouter;

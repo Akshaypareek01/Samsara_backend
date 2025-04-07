@@ -6,6 +6,7 @@ import EventApplication from "../Models/EventApplication.Model.js";
 import { CustomSession } from "../Models/CustomSession.Model.js";
 import { Class } from "../Models/Class.Model.js";
 import Company from "../Models/Comapny.Model.js";
+import crypto from 'crypto';
 
 export const checkUserByMobile = async (req, res) => {
   try {
@@ -581,5 +582,208 @@ export const getWeeklyStats = async (req, res) => {
       res.status(200).json(result);
   } catch (error) {
       res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+// Get user profile
+export const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    
+    if (!userId) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'User ID is required'
+      });
+    }
+
+    const user = await User.findById(userId)
+      .populate('company_name')
+      .select('-password');
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'User not found'
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'fail',
+      message: error.message
+    });
+  }
+};
+
+// Update password
+export const updatePassword = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!userId || !currentPassword || !newPassword) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'User ID, current password, and new password are required'
+      });
+    }
+
+    const user = await User.findById(userId).select('+password');
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'User not found'
+      });
+    }
+
+    // Check if current password is correct
+    if (!(await user.correctPassword(currentPassword, user.password))) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Current password is incorrect'
+      });
+    }
+
+    // Update password
+    user.password = newPassword;
+    user.passwordChangedAt = Date.now();
+    await user.save();
+
+    // Generate a new token
+    const token = jwt.sign({ id: user._id }, 'your-secret-key', {
+      expiresIn: '1h'
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Password updated successfully',
+      token
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'fail',
+      message: error.message
+    });
+  }
+};
+
+// Forgot password - sends a reset token
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Email is required'
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'No user found with that email'
+      });
+    }
+
+    // Generate reset token
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    // In a real application, you would send this token via email
+    // For this example, we'll just return it in the response
+    
+    // Create reset URL
+    const resetURL = `${req.protocol}://${req.get('host')}/api/users/resetPassword/${resetToken}`;
+
+    try {
+      // Here you would normally send an email with the reset URL
+      // For this example, we'll just return the reset token
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Token sent to email',
+        resetToken, // In production, don't expose this token in the response
+        resetURL    // This would normally be sent via email
+      });
+    } catch (error) {
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      return res.status(500).json({
+        status: 'fail',
+        message: 'Error sending email. Try again later.'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: 'fail',
+      message: error.message
+    });
+  }
+};
+
+// Reset password using token
+export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Token and new password are required'
+      });
+    }
+
+    // Hash the token to compare with the stored hashed token
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Find user by the hashed token and check if token has not expired
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Token is invalid or has expired'
+      });
+    }
+
+    // Update password and reset token fields
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    user.passwordChangedAt = Date.now();
+    await user.save();
+
+    // Generate JWT
+    const jwtToken = jwt.sign({ id: user._id }, 'your-secret-key', {
+      expiresIn: '1h'
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Password has been reset successfully',
+      token: jwtToken
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'fail',
+      message: error.message
+    });
   }
 };
