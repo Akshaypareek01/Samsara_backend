@@ -7,6 +7,7 @@ import { CustomSession } from "../Models/CustomSession.Model.js";
 import { Class } from "../Models/Class.Model.js";
 import Company from "../Models/Comapny.Model.js";
 import crypto from 'crypto';
+import { initializeWaterIntakeofnewuser } from "./WaterIntake.Controller.js";
 
 export const checkUserByMobile = async (req, res) => {
   try {
@@ -166,7 +167,7 @@ export const createUser = async (req, res) => {
           endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 1 day from now
       };
       await Membership.create(membershipData);
-
+      await initializeWaterIntakeofnewuser(newUser._id)
 
         res.status(201).json({
             status: 'success',

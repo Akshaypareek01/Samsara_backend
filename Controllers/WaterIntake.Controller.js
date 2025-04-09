@@ -27,7 +27,7 @@ export const initializeWaterIntake = async (req, res) => {
         // Create new water intake tracking
         const waterIntake = await WaterIntake.create({
             userId,
-            dailyGoal: dailyGoal || 2000 // Default to 2000ml if not specified
+            dailyGoal: 2000 // Default to 2000ml if not specified
         });
 
         res.status(201).json({
@@ -38,6 +38,48 @@ export const initializeWaterIntake = async (req, res) => {
         });
     } catch (error) {
         res.status(500).json({
+            status: 'fail',
+            message: error.message
+        });
+    }
+};
+
+export const initializeWaterIntakeofnewuser =async (req, res) => {
+    try {
+        const { userId, dailyGoal } = req.body;
+
+        // Check if user exists
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'User not found'
+            });
+        }
+
+        // Check if water intake tracking already exists
+        const existingTracking = await WaterIntake.findOne({ userId });
+        if (existingTracking) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Water intake tracking already initialized for this user'
+            });
+        }
+
+        // Create new water intake tracking
+        const waterIntake = await WaterIntake.create({
+            userId,
+            dailyGoal: 2000 // Default to 2000ml if not specified
+        });
+
+        return({
+            status: 'success',
+            data: {
+                waterIntake
+            }
+        });
+    } catch (error) {
+        return({
             status: 'fail',
             message: error.message
         });
@@ -127,6 +169,7 @@ export const getTodaySummary = async (req, res) => {
 
         const waterIntake = await WaterIntake.findOne({ userId });
         if (!waterIntake) {
+            initializeWaterIntakeofnewuser(userId)
             return res.status(404).json({
                 status: 'fail',
                 message: 'Water intake tracking not found for this user'
