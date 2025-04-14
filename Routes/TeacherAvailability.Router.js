@@ -7,21 +7,21 @@ import {
     getAvailableSlots
 } from '../Controllers/TeacherAvailability.Controller.js';
 
-const router = express.Router();
+const TeacherAvailabilityrouter = express.Router();
 
 // Create new availability
-router.post('/', createAvailability);
+TeacherAvailabilityrouter.post('/', createAvailability);
 
 // Get all availabilities for a teacher
-router.get('/teacher/:teacherId', getTeacherAvailabilities);
+TeacherAvailabilityrouter.get('/teacher/:teacherId', getTeacherAvailabilities);
 
 // Get available slots for a specific date
-router.get('/available-slots/:teacherId/:date', getAvailableSlots);
+TeacherAvailabilityrouter.get('/available-slots/:teacherId/:date', getAvailableSlots);
 
 // Update availability
-router.patch('/:id', updateAvailability);
+TeacherAvailabilityrouter.patch('/:id', updateAvailability);
 
 // Delete availability
-router.delete('/:id', deleteAvailability);
+TeacherAvailabilityrouter.delete('/:id', deleteAvailability);
 
-export default router; 
+export default TeacherAvailabilityrouter; 

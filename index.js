@@ -32,6 +32,7 @@ import MembershipRouter from './Routes/Membership.Router.js';
 import PaymentRoutes from './Routes/Payment.Router.js';
 import WaterIntakeRouter from './Routes/WaterIntake.Router.js';
 import StepTrackerRouter from './Routes/StepTracker.Router.js';
+import TeacherAvailabilityrouter from './Routes/TeacherAvailability.Router.js';
 // import path from 'path';
 // import { fileURLToPath } from 'url';
 // import { dirname } from 'path';
@@ -161,6 +162,7 @@ app.use('/api/memberships', MembershipRouter);
 app.use('/payment', PaymentRoutes);
 app.use('/api/water-intake', WaterIntakeRouter);
 app.use('/api/step-tracker', StepTrackerRouter);
+app.use('/api/teacher-availability', TeacherAvailabilityrouter);
 
 app.listen(port, '0.0.0.0',() =>{
     connection();
