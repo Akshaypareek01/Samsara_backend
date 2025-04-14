@@ -27,6 +27,7 @@ import {
     resetPassword
 } from '../Controllers/User.Controller.js';
 import multer from 'multer';
+import { checkMobileNumber } from '../Controllers/checkMobile.controller.js';
 
 const userRouter = express.Router();
 
@@ -87,5 +88,7 @@ userRouter.get('/profile/:userId', getUserProfile);
 userRouter.patch('/update-password/:userId', updatePassword);
 userRouter.post('/forgot-password', forgotPassword);
 userRouter.patch('/reset-password/:token', resetPassword);
+
+userRouter.post('/check-mobile-both', checkMobileNumber); 
 
 export default userRouter;
