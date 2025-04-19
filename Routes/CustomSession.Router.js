@@ -15,7 +15,8 @@ import {
   EndSessionMeeting,
   getAllSessionsByUserId,
   getSessionDetails,
-  getAllSessionsByUserIdUpcoming
+  getAllSessionsByUserIdUpcoming,
+  getAllSessionsByTeacherId
 } from '../Controllers/CustomSession.Controller.js';
 
 const CustomSessionRouter = express.Router();
@@ -32,6 +33,7 @@ CustomSessionRouter.put('/approve/:sessionId',approveSession);
 CustomSessionRouter.get('/sessions/:userId', getAllSessionsByUserId);
 CustomSessionRouter.get('/sessions/:userId/upcoming', getAllSessionsByUserIdUpcoming);
 CustomSessionRouter.get('/session/:userId/:sessionId', getSessionDetails);
+CustomSessionRouter.get('/teacher/:teacherId/sessions', getAllSessionsByTeacherId);
 
 CustomSessionRouter.post('/time-slots', createTimeSlot);
 

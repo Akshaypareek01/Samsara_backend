@@ -270,6 +270,26 @@ export const getSessionDetails = async (req, res) => {
       res.status(500).json({ success: false, error: error.message });
     }
   };
+
+export const getAllSessionsByTeacherId = async (req, res) => {
+    try {
+        const { teacherId } = req.params;
+
+        if (!teacherId) {
+            return res.status(400).json({ message: "Teacher ID is required" });
+        }
+
+        const sessions = await CustomSession.find({ teacher: teacherId })
+            .populate('user', 'name email')  // Populating user details
+            .populate('timeSlot', 'timeRange') // Populating time slot details
+            .exec();
+
+        res.status(200).json(sessions);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 export {
   createSession,
   getAllSessions,
@@ -282,5 +302,6 @@ export {
   getTimeSlotById,
   updateTimeSlot,
   deleteTimeSlot,
-  EndSessionMeeting
+  EndSessionMeeting,
+  getAllSessionsByTeacherId
 };
