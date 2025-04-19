@@ -249,3 +249,66 @@ export const deleteTeacher = async (req, res) => {
     });
   }
 };
+
+export const getTeacherStats = async (req, res) => {
+  const { teacherId, days } = req.body;
+
+  try {
+      const teacher = await Teacher.findById(teacherId);
+      if (!teacher) return res.status(404).json({ message: 'Teacher not found' });
+
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - days);
+
+      const filteredAttendance = teacher.attendance.filter(att => new Date(att.joinedAt) >= startDate);
+
+      const totalClasses = filteredAttendance.length;
+      const totalMinutes = filteredAttendance.reduce((sum, att) => sum + (att.durationMinutes || 0), 0);
+      const totalKcalBurned = filteredAttendance.reduce((sum, att) => sum + (att.kcalBurned || 0), 0);
+
+      res.status(200).json({ totalClasses, totalMinutes, totalKcalBurned });
+  } catch (error) {
+      res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+export const getTeacherWeeklyStats = async (req, res) => {
+  const { teacherId } = req.body;
+
+  try {
+      const teacher = await Teacher.findById(teacherId);
+      if (!teacher) return res.status(404).json({ message: 'Teacher not found' });
+
+      const today = new Date();
+      const startDate = new Date();
+      startDate.setDate(today.getDate() - 6); // Get last 7 days
+
+      const weeklyData = {};
+      const daysMap = ['S', 'M', 'T', 'W', 'Th', 'F', 'Sa']; // Updated correct mapping
+
+      for (let i = 0; i < 7; i++) {
+          const date = new Date(startDate);
+          date.setDate(startDate.getDate() + i);
+          const label = daysMap[date.getDay()];
+          
+          // Default values set to 5 instead of 0
+          weeklyData[label] = { label, totalMinutes: 5, totalKcalBurned: 5 };
+      }
+
+      teacher.attendance.forEach(att => {
+          const attDate = new Date(att.joinedAt);
+          if (attDate >= startDate && attDate <= today) {
+              const label = daysMap[attDate.getDay()];
+              if (weeklyData[label]) {
+                  weeklyData[label].totalMinutes = (att.durationMinutes || 0) + (weeklyData[label].totalMinutes !== 5 ? weeklyData[label].totalMinutes : 0);
+                  weeklyData[label].totalKcalBurned = (att.kcalBurned || 0) + (weeklyData[label].totalKcalBurned !== 5 ? weeklyData[label].totalKcalBurned : 0);
+              }
+          }
+      });
+
+      const result = Object.values(weeklyData);
+      res.status(200).json(result);
+  } catch (error) {
+      res.status(500).json({ message: 'Server error', error });
+  }
+};

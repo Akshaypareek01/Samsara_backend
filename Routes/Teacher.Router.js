@@ -7,7 +7,9 @@ import {
   deleteTeacher,
   loginTeacher,
   checkTeacherByMobile,
-  loginTeacherByMobile
+  loginTeacherByMobile,
+  getTeacherStats,
+  getTeacherWeeklyStats
 } from '../Controllers/Teacher.Controller.js';
 import multer from 'multer';
 import { uploadClassRecording } from '../Controllers/Classes.Controller.js';
@@ -43,7 +45,8 @@ teacherRouter.delete('/:id', deleteTeacher);
 // Login
 teacherRouter.post('/login', loginTeacher);
 
-
+teacherRouter.post('/stats', getTeacherStats);
+teacherRouter.post('/weekly-stats', getTeacherWeeklyStats); 
 
 teacherRouter.post('/upload-recording', upload.single('recording'), uploadClassRecording);
 
