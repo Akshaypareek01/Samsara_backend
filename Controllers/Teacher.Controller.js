@@ -185,45 +185,74 @@ export const getTeacherById = async (req, res) => {
 // Update a teacher by ID
 export const updateTeacher = async (req, res) => {
   try {
+    const teacherId = req.params.id;
+    const updateData = { ...req.body };
 
-    const TeacherData = req.body;
-    const qualificationData = req.body.qualification;
-    const additional_coursesData = req.body.additional_courses;
-      if (req.files && req.files.length > 0) {
-        // If images are provided, update the 'images' field
-        TeacherData.images = req.files.map(file => file.path);
-    } else {
-        // If no images provided, remove the 'images' field from userData
-        delete TeacherData.images;
+    // Handle qualification if provided
+    if (updateData.qualification) {
+      try {
+        updateData.qualification = JSON.parse(updateData.qualification);
+      } catch (error) {
+        return res.status(400).json({
+          status: 'fail',
+          message: 'Invalid qualification format'
+        });
+      }
     }
-    const qualificationArray = JSON.parse(qualificationData);
-      const additional_coursesArray = JSON.parse(additional_coursesData);
-      TeacherData.qualification = qualificationArray;
-      TeacherData.additional_courses = additional_coursesArray;
+
+    // Handle additional_courses if provided
+    if (updateData.additional_courses) {
+      try {
+        updateData.additional_courses = JSON.parse(updateData.additional_courses);
+      } catch (error) {
+        return res.status(400).json({
+          status: 'fail',
+          message: 'Invalid additional_courses format'
+        });
+      }
+    }
+
+    // Handle images if provided
+    if (req.files && req.files.length > 0) {
+      updateData.images = req.files.map(file => ({
+        filename: file.filename,
+        path: file.path
+      }));
+    }
+
+    // Remove undefined or null values
+    Object.keys(updateData).forEach(key => {
+      if (updateData[key] === undefined || updateData[key] === null) {
+        delete updateData[key];
+      }
+    });
+
     const updatedTeacher = await Teacher.findByIdAndUpdate(
-      req.params.id,
-      TeacherData,
+      teacherId,
+      updateData,
       {
         new: true,
-        runValidators: true,
+        runValidators: true
       }
     );
+
     if (!updatedTeacher) {
       return res.status(404).json({
         status: 'fail',
-        message: 'Teacher not found',
+        message: 'Teacher not found'
       });
     }
+
     res.status(200).json({
       status: 'success',
       data: {
-        teacher: updatedTeacher,
-      },
+        teacher: updatedTeacher
+      }
     });
-  } catch (err) {
+  } catch (error) {
     res.status(400).json({
       status: 'fail',
-      message: err.message,
+      message: error.message
     });
   }
 };
