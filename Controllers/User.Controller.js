@@ -7,7 +7,7 @@ import { CustomSession } from "../Models/CustomSession.Model.js";
 import { Class } from "../Models/Class.Model.js";
 import Company from "../Models/Comapny.Model.js";
 import crypto from 'crypto';
-import { initializeWaterIntakeofnewuser } from "./WaterIntake.Controller.js";
+import { WaterIntake } from "../Models/WaterIntake.Model.js";
 
 export const checkUserByMobile = async (req, res) => {
   try {
@@ -122,7 +122,6 @@ export const loginUserByMobile = async (req, res) => {
 export const createUser = async (req, res) => {
     try {
       console.log("Data ==>",req.body)
-      // console.log("images",req.file)
       const userData = req.body;
       const {companyId} = userData
       let companyObjectId = null;
@@ -140,47 +139,53 @@ export const createUser = async (req, res) => {
         }
               
       const images = req.files || [];
-      //  console.log("Images",images)
        
-        userData.images = images.map(file => ({
-            filename: file.filename,
-            path: file.path
-        }));
+      userData.images = images.map(file => ({
+          filename: file.filename,
+          path: file.path
+      }));
       
-
-        const newUser = await User.create({ 
-          ...userData, 
-          company_name: companyObjectId  // Store ObjectId here
+      const newUser = await User.create({ 
+        ...userData, 
+        company_name: companyObjectId  // Store ObjectId here
       });
-        const defaultMood = {
-          userId: newUser._id,
-          mood: 'Happy' // You can set a default mood value
-        };
-        await Mood.create(defaultMood);
 
-        const membershipData = {
-          userId: newUser._id,
-          planName: 'Trail Plan', // You can set a default plan name
-          validityDays: 7,
-          status: 'active',
-          startDate: new Date(),
-          endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 1 day from now
+      // Create default mood
+      const defaultMood = {
+        userId: newUser._id,
+        mood: 'Happy' // You can set a default mood value
+      };
+      await Mood.create(defaultMood);
+
+      // Create membership
+      const membershipData = {
+        userId: newUser._id,
+        planName: 'Trail Plan', // You can set a default plan name
+        validityDays: 7,
+        status: 'active',
+        startDate: new Date(),
+        endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 1 day from now
       };
       await Membership.create(membershipData);
-      await initializeWaterIntakeofnewuser(newUser._id)
 
-        res.status(201).json({
-            status: 'success',
-            data: {
-                user: newUser
-            }
-        });
+      // Create water intake tracking
+      await WaterIntake.create({
+        userId: newUser._id,
+        dailyGoal: 2000 // Default goal in ml
+      });
+
+      res.status(201).json({
+          status: 'success',
+          data: {
+              user: newUser
+          }
+      });
     } catch (error) {
       console.log("Error",error)
-        res.status(400).json({
-            status: 'fail',
-            message: error.message
-        });
+      res.status(400).json({
+          status: 'fail',
+          message: error.message
+      });
     }
 };
 

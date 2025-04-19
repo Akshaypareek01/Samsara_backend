@@ -1,4 +1,5 @@
 import { Teacher } from "../Models/Teachers.Model.js";
+import { TeacherWaterIntake } from "../Models/TeacherWaterIntake.Model.js";
 import jwt from 'jsonwebtoken';
 
 
@@ -95,29 +96,35 @@ export const createTeacher = async (req, res) => {
     const teacherData = req.body;
     const qualificationData = req.body.qualification || null;
     const additional_coursesData = req.body.additional_courses || null;
-      const images = req.files || null;
-      let qualificationArray ;
-      let additional_coursesArray;
-      if(qualificationData){
-         qualificationArray = JSON.parse(qualificationData);
-         teacherData.qualification = qualificationArray;
-      }
+    const images = req.files || null;
+    let qualificationArray;
+    let additional_coursesArray;
 
-      if(additional_coursesData){
-       additional_coursesArray = JSON.parse(additional_coursesData);
-       teacherData.additional_courses = additional_coursesArray;
-      }
-      
+    if(qualificationData){
+      qualificationArray = JSON.parse(qualificationData);
+      teacherData.qualification = qualificationArray;
+    }
+
+    if(additional_coursesData){
+      additional_coursesArray = JSON.parse(additional_coursesData);
+      teacherData.additional_courses = additional_coursesArray;
+    }
+    
     if(images){
       teacherData.images = images.map(file => ({
         filename: file.filename,
         path: file.path
-    }));
+      }));
     }
-     
-    
     
     const newTeacher = await Teacher.create(teacherData);
+
+    // Automatically initialize water intake tracking for the new teacher
+    await TeacherWaterIntake.create({
+      teacherId: newTeacher._id,
+      dailyGoal: 2000 // Default goal in ml
+    });
+    
     res.status(201).json({
       status: 'success',
       data: {
