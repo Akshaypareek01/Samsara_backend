@@ -271,7 +271,7 @@ export const getSessionDetails = async (req, res) => {
     }
   };
 
-export const getAllSessionsByTeacherId = async (req, res) => {
+ const getAllSessionsByTeacherId = async (req, res) => {
     try {
         const { teacherId } = req.params;
 
