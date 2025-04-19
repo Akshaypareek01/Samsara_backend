@@ -33,6 +33,7 @@ import PaymentRoutes from './Routes/Payment.Router.js';
 import WaterIntakeRouter from './Routes/WaterIntake.Router.js';
 import StepTrackerRouter from './Routes/StepTracker.Router.js';
 import TeacherAvailabilityrouter from './Routes/TeacherAvailability.Router.js';
+import teacherWaterIntakeRouter from './Routes/TeacherWaterIntake.Router.js';
 // import path from 'path';
 // import { fileURLToPath } from 'url';
 // import { dirname } from 'path';
@@ -163,6 +164,7 @@ app.use('/payment', PaymentRoutes);
 app.use('/api/water-intake', WaterIntakeRouter);
 app.use('/api/step-tracker', StepTrackerRouter);
 app.use('/api/teacher-availability', TeacherAvailabilityrouter);
+app.use('/api/teacher-water-intake', teacherWaterIntakeRouter);
 
 app.listen(port, '0.0.0.0',() =>{
     connection();
